@@ -1,12 +1,15 @@
 :root {
-    --primary-color: #28a745;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --light-bg: #f8f9fa;
-    --dark-text: #343a40;
-    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --primary-color: #4CAF50; /* Softer green for primary actions */
+    --secondary-color: #607D8B; /* Cool gray-blue for secondary elements */
+    --accent-color: #FF5722; /* Bright accent color for highlights or warnings */
+    --success-color: #43A047; /* Slightly lighter green for success messages */
+    --danger-color: #F44336; /* Rich red for danger or errors */
+    --light-bg: #F1F1F1; /* Light background for overall page */
+    --dark-bg: #333333; /* Dark background for headers or footers */
+    --dark-text: #263238; /* Dark text for readability */
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Slightly darker shadow */
 }
+
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -32,6 +35,7 @@ body {
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    /* transform: scale(1.01); */
 }
 
 .card-body {
@@ -76,7 +80,8 @@ body {
 
 .table tbody tr {
     background-color: #ffffff;
-    box-shadow: var(--card-shadow);
+    /* box-shadow: var(--card-shadow); */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s ease;
 }
 
@@ -142,15 +147,18 @@ h2 {
     border-radius: 8px;
     transition: all 0.3s ease;
     cursor: pointer;
+
 }
 
 .btn-primary {
     background-color: var(--primary-color);
     border: none;
+    color: #FFFFFF;
 }
 
+
 .btn-primary:hover {
-    background-color: #218838;
+    background-color: var(--accent-color);;
     transform: translateY(-2px);
 }
 
@@ -167,6 +175,7 @@ h2 {
 
 .navbar {
     z-index: 1030;
+    background-color: var(--dark-bg);
 }
 
 .navbar .navbar-toggler {
@@ -183,7 +192,7 @@ h2 {
 }
 
 .navbar-nav .nav-link:hover {
-    color: #e9ecef !important;
+    color: var(--accent-color);
 }
 
 .navbar-nav .nav-link.active {
@@ -274,7 +283,8 @@ h2 {
 }
 
 .profile-header {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/img/profile-background.png');
+    /* background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/img/profile-background.png'); */
+       background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     background-size: cover;
     background-position: center;
     color: white;
