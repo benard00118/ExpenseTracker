@@ -9,9 +9,11 @@
         <a href="{% url model_name|add:'_update' object.pk %}" class="btn btn-primary">
           <i class="fas fa-edit me-2"></i>Edit
         </a>
-        <a href="{% url model_name|add:'_delete' object.pk %}" class="btn btn-danger ms-2">
+        <!-- Updated Delete button -->
+        <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal" 
+                data-bs-target="#deleteModal" data-delete-url="{% url 'api_category_delete' object.pk %}">
           <i class="fas fa-trash-alt me-2"></i>Delete
-        </a>
+        </button>
         <a href="{% url model_name|add:'_list' %}" class="btn btn-secondary ms-2">
           <i class="fas fa-arrow-left me-2"></i>Back to List
         </a>
@@ -19,4 +21,110 @@
     </div>
   </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this {{ model_name }}?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Confirm Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header bg-success text-white">
+      <strong class="me-auto">Success</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Item deleted successfully!
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Get CSRF token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmDeleteBtn = document.getElementById('confirmDelete');
+    const deleteModal = document.getElementById('deleteModal');
+    const modalInstance = new bootstrap.Modal(deleteModal);
+    let deleteUrl = null;
+
+    // Set delete URL every time the modal is opened
+    deleteModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        deleteUrl = button.getAttribute('data-delete-url'); // Update the delete URL from data attribute
+    });
+
+    confirmDeleteBtn.addEventListener('click', function() {
+        if (!deleteUrl) {
+            console.error('Delete URL not found!');
+            alert('Delete URL not found. Please try again.');
+            return;
+        }
+
+        // Send the POST request to the delete URL
+        fetch(deleteUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Hide the modal and show success toast
+                modalInstance.hide();
+                const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                successToast.show();
+                setTimeout(() => {
+                    window.location.href = '{% url model_name|add:"_list" %}';
+                }, 2000);
+            } else {
+                alert('Error deleting item: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting item. Please try again.');
+        });
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}

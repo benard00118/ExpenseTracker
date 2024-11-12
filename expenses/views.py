@@ -5,6 +5,10 @@ from .models import Category, Budget, Expense
 from .forms import CategoryForm, BudgetForm, ExpenseForm
 from django.db.models import Sum
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 @login_required
 def dashboard(request):
@@ -67,18 +71,17 @@ def object_create_or_update(request, model, form_class, pk=None, template_name='
     }
     return render(request, template_name, context)
 
+
+
 @login_required
-def object_delete(request, model, pk, template_name='expenses/object_confirm_delete.html'):
-    obj = get_object_or_404(model, pk=pk, user=request.user)
-    if request.method == 'POST':
+@require_http_methods(["POST"])
+def object_delete(request, model, pk):
+    try:
+        obj = get_object_or_404(model, pk=pk, user=request.user)
         obj.delete()
-        messages.success(request, f'{model.__name__} deleted successfully.')
-        return redirect('dashboard')
-    context = {
-        'object': obj,
-        'model_name': model.__name__.lower()
-    }
-    return render(request, template_name, context)
+        return JsonResponse({'success': True, 'message': f'{model.__name__} deleted successfully.'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 # Use these generic views for each model
 @login_required

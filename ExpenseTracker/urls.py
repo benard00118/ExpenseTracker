@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("expenses.urls")),
     path('users/', include('users.urls')),
     path('visuals/', include(('visuals.urls', 'visuals'), namespace='visuals')), 
+    path('payment/', include('payment.urls')),
 ]
 
 

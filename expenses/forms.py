@@ -45,3 +45,5 @@ class ExpenseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date'].widget.attrs['class'] = 'date-input-container'
+        
+   
